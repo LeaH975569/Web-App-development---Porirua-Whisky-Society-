@@ -1,0 +1,130 @@
+﻿@model PWS.Models.Blog
+
+@{
+    ViewData["Title"] = "Edit";
+}
+<br />
+<h1>Edit Blog</h1>
+
+<hr />
+
+<form asp-action="Edit" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+    <div class="card card-body">
+       
+        <div class="mb-3">
+            <label asp-for="Title" class="control-label"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group form-check py-2 fs-5">
+            <label class="form-check-label">
+                <input class="form-check-input" asp-for="IsPublished" /> @Html.DisplayNameFor(model => model.IsPublished)
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ImageFile" class="control-label"></label>
+            <input type="file" asp-for="ImageFile" accept=".jpg,.png" class="form-control" />
+            <span asp-validation-for="ImageFile" class="text-danger"></span>
+        </div>
+
+        <!-- Create the editor container -->
+        <div class="py-4">
+            <label asp-for="Content"></label>
+            <span asp-validation-for="Content" class="text-danger"></span>
+            <div id="editor_0" style="min-height:250px">
+            </div>
+            <input hidden asp-for="Content" class="form-control" />
+            <input hidden asp-for="Summary" class="form-control" />
+        </div>
+
+
+        @*         <div class="form-group">
+        <label asp-for="PublishedDate" class="control-label"></label>
+        <input asp-for="PublishedDate" class="form-control" />
+        <span asp-validation-for="PublishedDate" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+        <label asp-for="UpdatedDate" class="control-label"></label>
+        <input asp-for="UpdatedDate" class="form-control" />
+        <span asp-validation-for="UpdatedDate" class="text-danger"></span>
+        </div> *@
+
+        <input type="hidden" asp-for="PublishedDate" class="form-control" />
+        <input type="hidden" asp-for="UpdatedDate" class="form-control" />
+
+        @*         <button asp-controller="Note" asp-action="Result">Save</button> *@
+        <div class="mt-2">
+            <div class="col-md-offset-2 col-md-5">
+                <input type="submit" value="Edit" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+</form>
+@* <div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <input asp-for="Content" class="form-control" />
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Summary" class="control-label"></label>
+                <input asp-for="Summary" class="form-control" />
+                <span asp-validation-for="Summary" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsPublished" /> @Html.DisplayNameFor(model => model.IsPublished)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="PublishedDate" class="control-label"></label>
+                <input asp-for="PublishedDate" class="form-control" />
+                <span asp-validation-for="PublishedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UpdatedDate" class="control-label"></label>
+                <input asp-for="UpdatedDate" class="form-control" />
+                <span asp-validation-for="UpdatedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div> *@
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<script>
+    SummaryCharacterCount = @Blog.SummaryCharacterCount; @*A jank way to pass stuff to the js file.*@
+</script>
+<script src="~/lib/quill/quill.js"></script>
+<link rel="stylesheet" href="~/lib/quill/quill.snow.css" />
+<style>
+    .ql-container {
+        margin: 0;
+        padding: 0;
+        font-family: var(--bs-body-font-family);
+        font-size: var(--bs-body-font-size);
+    }
+</style>
+<script src="~/js/blogadmin/create&edit.js"></script>

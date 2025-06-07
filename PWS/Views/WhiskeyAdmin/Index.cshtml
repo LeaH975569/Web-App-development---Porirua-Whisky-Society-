@@ -1,0 +1,131 @@
+﻿@model WhiskeyAdminViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<br />
+<h1>Tasted Whisky Database</h1>
+<br />
+
+<form class="" asp-controller="whiskeyAdmin" asp-action="Index" id="filterForm" role="search" method="get">
+    <div class="card card-body d-flex flex-row flex-wrap" style="gap:25px;">
+        <div>
+            <label asp-for="SearchString" class="form-label"></label>
+            <input asp-for="SearchString" class="form-control">
+        </div>
+        <div>
+            <label asp-for="SortMode" class="form-label"></label>
+            <select class="form-select" asp-for="SortMode" asp-items="Html.GetEnumSelectList<SortMode>()">
+            </select>
+            <div class="">
+                <input asp-for="OrderDes" class="" type="checkbox" />
+                <label asp-for="OrderDes" class="control-label"></label>
+            </div>
+        </div>
+        <div>
+            <label class="form-label">Score Range</label>
+            <div class="d-flex gap-3" style="width:fit-content">
+                <span class="">
+                    <input asp-for="ScoreMin" type="number" class="form-control d-block" style="width:75px;">
+                </span>
+                <span class="">
+                    <input asp-for="ScoreMax" type="number" class="form-control d-block" style="width:75px;">
+                </span>
+            </div>
+        </div>
+        <div>
+            <label asp-for="SearchYear" class="form-label"></label>
+
+            <select class="form-select" asp-for="SearchYear">
+                <option value="-1">All</option>
+                @foreach (var year in Model.YearSelect)
+                {
+                    <option value="@year">@year</option>
+                }
+            </select>
+        </div>
+
+
+        <div class="ms-auto align-self-center d-flex">
+            <a asp-controller="whiskeyAdmin" asp-action="index" class="m-1 btn btn-lg btn-outline-primary">Clear filter</a>
+            <button type="submit" class="m-1 btn btn-lg btn-primary">Apply Filter</button>
+        </div>
+    </div>
+    <div asp-validation-summary="All" class="text-danger"></div>
+</form>
+<br />
+<p>
+    <a asp-action="Create" class="btn btn-success">Create New Whisky</a>
+</p>
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th width="150px">
+                Image
+            </th>
+            <th>
+                @(Html.DisplayNameFor(model => model.Whiskey.WhiskeyName))
+            </th>
+            <th>
+                @(Html.DisplayNameFor(model => model.Whiskey.WhiskeyScoreSetting))
+            </th>
+            <th width="130px">
+                Score
+            </th>
+            <th>
+                @(Html.DisplayNameFor(model => model.Whiskey.TastedDate))
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Whiskeys) {
+        <tr>
+            <th>
+                <img src="@item.WhiskeyImageUrl" style="width:100%"/>
+            </th>
+            <td>
+                @Html.DisplayFor(modelItem => item.WhiskeyName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WhiskeyScoreSetting)
+            </td>
+            <td>
+                    @if (item.HasBeenTasted)
+                    {
+                        <span class="fs-5"><b>@Html.DisplayFor(modelItem => item.TotalScore)</b></span> <br />
+                        @if(item.WhiskeyScoreSetting != WhiskeyScoreSetting.ManualTotal)
+                        {
+                            <p class="fs-6 fst-italic">
+                                F: @Html.DisplayFor(modelItem => item.WhiskeyFinish)  <br />
+                                A: @Html.DisplayFor(modelItem => item.WhiskeyAroma)   <br />
+                                T: @Html.DisplayFor(modelItem => item.WhiskeyTaste)   <br />
+                            </p>
+                        }
+                    }
+                    else
+                    {
+                        <span class="fs-5">-</span>
+                    }
+                </td>
+            <td>
+                @if (item.HasBeenTasted && item.TastedDate != null)
+                {
+                    @Html.DisplayFor(modelItem => item.TastedDate)
+                }
+                else
+                {
+                    <span class="fs-5">-</span>
+                }
+            </td>
+            <td>
+                <a class="btn btn-info" asp-action="Edit" asp-route-id="@item.WhiskeyId">Edit</a> |
+                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.WhiskeyId">Delete</a> |
+                <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.WhiskeyId">Details</a> 
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

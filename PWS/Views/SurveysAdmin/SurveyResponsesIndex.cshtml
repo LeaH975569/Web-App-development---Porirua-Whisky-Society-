@@ -1,0 +1,225 @@
+﻿@model IEnumerable<PWS.Models.TastingResponse>
+
+@{
+    ViewData["Title"] = "Survey Responses Index";
+}
+<br>
+<h1>User Survey Responses</h1>
+<br>
+<p>
+    <a asp-action="SurveyResponsesCreate" class="btn btn-success" asp-route-surveyId="@ViewBag.SurveyId">Create New Response</a>
+</p>
+ 
+
+
+@* Filter section Start *@
+<form asp-controller="SurveysAdmin" asp-action="SurveyResponsesIndex" method="get" style="width:100%;" class="mb-3 mt-4">
+    <div class="card flex-row flex-wrap">
+        
+        <div class="col-form-label ms-md-4 mt-0 mb-2">
+            <label class="my-1" for="inputDefault">Search</label>
+            <input type="text" class="form-control"  name="searchString"
+                   placeholder="Search UserName or TastingItem" 
+                   value="@ViewBag.SearchString"  
+                   id="placeholderdynamicWidthInput">
+            <input type="hidden" value="@ViewBag.SurveyId" name="surveyId" />
+        </div>
+
+        <div class="ms-md-4 mt-2">
+            <label for="orderSelect" class="form-label">Order By</label>
+            <select class="form-select" id="orderSelect" name="sortOrder">
+                @if (ViewBag.SortOrder == "tastingItem")
+                {
+                    <option value="tastingItem" selected>Tasting Item</option>
+                }
+                else
+                {
+                    <option value="tastingItem">Tasting Item</option>
+                }
+
+                @if (ViewBag.SortOrder == "userName")
+                {
+                    <option value="userName" selected>User Name</option>
+                }
+                else
+                {
+                    <option value="userName">User Name</option>
+                }               
+            </select>
+        </div>
+
+        <div class="form-check form-switch ms-md-4 mt-md-5 mb-md-1">
+            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="descending" value="true" 
+                   @(ViewBag.Descending ? "checked" : "")>
+            <label class="form-check-label" for="flexSwitchCheckDefault">Descending</label>
+        </div>
+
+        <div class="ms-auto align-self-center me-md-3">
+            <button type="submit" name="clearFilter" value="true" class="m-1 btn btn-outline-primary">Clear filter</button>
+            <button type="submit" class="m-1 btn btn-primary">Apply Filter</button>
+        </div>
+    </div>
+</form>
+
+@* @Html.ActionLink("", "SurveyResponsesIndex", "SurveysAdmin", new { sortOrder = ViewBag.UserNameSortParam, ViewBag.SurveyId }, null)
+@Html.ActionLink("", "SurveyResponsesIndex", "SurveysAdmin", new { sortOrder = ViewBag.TatingItemNameSortParm }, null) *@
+
+@* Filter section End *@
+
+
+@{
+    var tis = Model.Select(x => x.TastingItem);
+    if(tis.Count() > 0)
+    {
+        var ts = tis.Distinct();
+        <div style="display: flex; align-items: baseline; clear: both;">
+            <h3 class="mt-1">Recent Whisky Tasting Results</h3>
+            <h2><i class="bi bi-person-heart ms-3"></i></h2>
+        </div>
+
+        <div class="row mb-3 mt-1">
+            <!-- Left side content -->
+            <div class="col-lg-2 col-md-6  text-center">
+                <h4>@Model.First().TastingItem.Survey.End.ToShortDateString()</h4>
+                <h4>@Model.First().TastingItem.Survey.Title</h4>
+                <h4>@Model.First().TastingItem.Survey.Subtitle</h4>
+            </div>
+
+            <!-- Right side ordered list -->
+            <div class="col-lg-4 col-md-6 ">
+                <ol class="text-muted fs-6">
+                    @foreach (var ti in ts.OrderByDescending(x => x.GetAverageScore()))
+                    {
+                        <li>@ti.Whiskey.WhiskeyName <br> @ti.GetAverageScore().ToString("F0") / 100</li>
+                    }
+                </ol>
+            </div>
+        </div>
+    }
+}
+
+
+ 
+
+
+
+ 
+ <div class="mx-2">
+     Users that guessed all whisky correctly:  
+    @{
+        foreach(var user in Model.GroupBy(x => x.SessionId))
+        {
+            if (user.All(x => x.WhiskeyGuess == x.TastingItem.Whiskey) && user.Count() == Model.Select(x => x.TastingItem).Distinct().Count())
+            {
+                var name = user.First().UserName +", ";
+                @name
+            }
+    }
+}
+
+</div>
+
+
+
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName) 
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TastingItem)  
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WhiskeyGuess)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Aroma)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Taste)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Finish)
+            </th>
+            <th>Total Score</th>
+            <th>Average Score</th>
+            <th>
+                @Html.DisplayNameFor(model => model.Notes)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TastingItem.Name)
+            </td>
+            <td>
+                @if(item.WhiskeyGuess != null)
+                {
+                    @if (item.WhiskeyGuess == item.TastingItem.Whiskey){
+                        <span class="text-success">@Html.DisplayFor(modelItem => item.WhiskeyGuess.WhiskeyName)</span>
+                    }
+                    else{
+                        <span class="text-danger">@Html.DisplayFor(modelItem => item.WhiskeyGuess.WhiskeyName)</span>
+                    }
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Aroma)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Taste)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Finish)
+            </td>
+
+                <!-- Total Score -->
+                <td>
+                    @{
+                        var totalScore = item.Aroma + item.Taste + item.Finish;
+                    }
+                    @totalScore
+                </td>
+
+                <!-- Average Score -->
+                <td>
+                    @{
+                        var averageScore = totalScore / 3.0;
+                    }
+                    @String.Format("{0:F0}", averageScore) <!-- Display average score with whole number -->
+                </td>
+
+            <td class="warpWord">
+                @Html.DisplayFor(modelItem => item.Notes)
+            </td>
+
+                <td nowrap>
+                    <a class="btn btn-info" asp-action="SurveyResponsesEdit" asp-route-id="@item.Id">Edit</a> |
+                    <a class="btn btn-warning" asp-action="SurveyResponsesDetails" asp-route-id="@item.Id">Details</a> |
+                    <a class="btn btn-danger" asp-action="SurveyResponsesDelete" asp-route-id="@item.Id">Delete</a> 
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Index" class="btn btn-outline-dark">Back to List</a>
+</div>
+
+
+@section Scripts {
+
+    <script>
+        const input = document.getElementById('placeholderdynamicWidthInput');
+        input.style.width = `${input.placeholder.length}ch`;
+    </script>
+
+}

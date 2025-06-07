@@ -1,0 +1,193 @@
+﻿@{
+    ViewData["Title"] = "Whiskys We've Tasted";
+}
+
+@model WhiskeyViewModel
+@*
+ // TODO: If no image exists, have a placeholder ready (just an icon)
+ // TODO: Have it show how many results there are some where!
+*@
+<br />
+<h2>Whiskys We've Tasted</h2>
+<br />
+<form class="" asp-controller="WhiskeyDatabase" asp-action="Index" id="filterForm" role="search" method="get">
+    <div class="card card-body d-flex flex-row flex-wrap" style="gap:25px;">
+        <div>
+            <label asp-for="SearchString" class="form-label"></label>
+            <input asp-for="SearchString" class="form-control">
+        </div>
+        <div>
+            <label asp-for="SortMode" class="form-label"></label>
+            <select class="form-select" asp-for="SortMode" asp-items="Html.GetEnumSelectList<SortMode>()">
+            </select>
+            <div class="">
+                <input asp-for="OrderDes" class="" type="checkbox" />
+                <label asp-for="OrderDes" class="control-label"></label>
+            </div>
+        </div>
+        <div>
+            <label class="form-label">Score Range</label>
+            <div class="d-flex gap-3" style="width:fit-content">
+                <span class="">
+                    <input asp-for="ScoreMin" type="number" class="form-control d-block" style="width:75px;">
+                </span>
+                <span class="">
+                    <input asp-for="ScoreMax" type="number" class="form-control d-block" style="width:75px;">
+                </span>
+            </div>
+        </div>
+        <div>
+            <label asp-for="SearchYear" class="form-label"></label>
+
+            <select class="form-select" asp-for="SearchYear">
+                <option value="-1">All</option>
+                @foreach (var year in Model.YearSelect)
+                {
+                    <option value="@year">@year</option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <label asp-for="AmountSelected" class="form-label"></label>
+
+            <select class="form-select" asp-for="AmountSelected">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="40">40</option>
+                <option value="60">60</option>
+            </select>
+        </div>
+
+
+        <div class="ms-auto align-self-center d-flex">
+            <a asp-controller="whiskeydatabase" asp-action="index" class="m-1 btn btn-lg btn-outline-primary">Clear filter</a>
+            <button type="submit" class="m-1 btn btn-lg btn-primary">Apply Filter</button>
+        </div>
+    </div>
+    <div asp-validation-summary="All" class="text-danger"></div>
+</form>
+<div class="d-flex flex-row flex-wrap gap-3 itemView" style="">
+    @*TODO: Make these clickable!*@
+    @foreach (var whisky in Model.Whiskeys)
+    {
+        <a class="text-decoration-none" asp-controller="WhiskeyDatabase" asp-action="Whiskey" asp-route-id="@whisky.WhiskeyId">
+            <div class="card whiskeyCard">
+                @*WhiskyImage*@
+                <div class="card-img-top" alt="" style="position:relative; background:url('@whisky.WhiskeyImageUrl') center no-repeat; background-size: auto 100%;"></div>
+                <hr style="margin: 0; padding: 0" />
+                <div class="card-body">
+                    @*WhiskyName*@
+                    <div class="card-title fw-bold" style="height:3em;">@whisky.WhiskeyName</div>
+                    @* <b class="card-title" style="height:18em; overflow:hidden">@whisky.WhiskeyName</b> *@
+                    @*WhiskyScore*@
+                    <p class="my-2">
+                        @if (whisky.HasBeenTasted)
+                        {
+                            <i>Score:</i> <b>@whisky.GetScoreString()</b>
+                            <br />
+                            <i>Tasted On:</i> <b>@whisky.GetTasteDateString()</b>
+                        }
+                        else
+                        {
+                            <i>Not Tasted Yet</i>
+                        }
+                    </p>
+                    @*Mini Whisky Description*@
+                    @* <p class="card-text">@whisky.MiniDescription</p> *@
+                </div>
+            </div>
+        </a>
+    }
+
+    @* <img class="card-img-top" src="~/images/Whiskey/Untitled1.jpg" alt="" style="height: 300px"> *@
+</div>
+@if (Model.Whiskeys.Count() == 0)
+{
+    <h4><i>No Items Found</i></h4>
+}
+
+@*TODO: Fix the fucking styling on this thing, the colors suck for it!*@
+@*Should maybe make this a component*@
+<nav aria-label="Whisky Results Pages" class="d-flex flex-column justify-content-centre mt-4">
+    <ul class="pagination" style="margin-left: auto;margin-right: auto;">
+        @if (Model.TotalPages > 1)
+        {
+            // Determines how many buttons appear. Breaks when not set to 5. Will need to be fixed if we want to show more or less than 5 buttons
+            int maxButtons = 5;
+            // How many buttons appear
+            int pagesToShow = Model.TotalPages < maxButtons ? Model.TotalPages : maxButtons;
+            // Shift determines the pages that appear within the pagination based on the current page, keeping the current page in the middle unless its the first one
+            // (i.e: current page == 3 then [1] [2] [3] [4] [5] )
+            // (i.e: current page == 4 then [2] [3] [4] [5] [6] )
+            int shift = Model.CurrentPage >= maxButtons / 2 ? Model.CurrentPage - maxButtons / 2 : 0;
+            // Cap the shift based on the total pages and amount of buttons that can show. Only apply if total pages > maxButtons
+            if (Model.TotalPages > maxButtons && Model.CurrentPage > Model.TotalPages - (maxButtons / 2 + 1))
+            {
+                shift = Model.TotalPages - maxButtons;
+            }
+        @*
+        @Model.TotalPages
+        <br />
+        @pagesToShow
+        <br />
+        @shift
+        <br />
+        @Html.Raw(Model.TotalPages - (maxButtons / 2 + 1))
+        *@
+
+
+        @*Previous button*@
+        <li class="page-item @Html.Raw(Model.CurrentPage < 1 ? "disabled" : "")">
+            <a class="page-link fw-bold" asp-controller="WhiskeyDatabase" asp-action="Index"    
+            asp-route-CurrentPage="@Html.Raw(Model.CurrentPage-1)"
+            asp-route-SearchString="@Model.SearchString"
+            asp-route-SearchYear="@Model.SearchYear"
+            asp-route-ScoreMin="@Model.ScoreMin"
+            asp-route-ScoreMax="@Model.ScoreMax"
+            asp-route-SortMode="@Model.SortMode"
+            asp-route-OrderDes="@Model.OrderDes">
+                🠄
+            </a>
+        </li>
+
+
+        @*[1] [2] [3]*@
+        @for (int i = 0; i < pagesToShow; i++)
+        {
+            int x = i + shift;
+            if (x > Model.TotalPages - 1) // Break the loop when we reach the max pages
+                break;
+
+            <li class="page-item @Html.Raw(x > Model.TotalPages - 1 ? "disabled" : "") @Html.Raw(x == Model.CurrentPage ? "active" : "")">
+                <a class="page-link" asp-controller="WhiskeyDatabase" asp-action="Index"
+                asp-route-CurrentPage="@x"
+                asp-route-SearchString="@Model.SearchString"
+                asp-route-SearchYear="@Model.SearchYear"
+                asp-route-ScoreMin="@Model.ScoreMin"
+                asp-route-ScoreMax="@Model.ScoreMax"
+                asp-route-SortMode="@Model.SortMode"
+                asp-route-OrderDes="@Model.OrderDes">
+                    @Html.Raw(x+1)
+                </a>
+            </li>
+        }
+
+        @*Next button*@
+        <li class="page-item @Html.Raw(Model.CurrentPage + 1 == Model.TotalPages ? "disabled" : "")">
+            <a class="page-link fw-bold" asp-controller="WhiskeyDatabase" asp-action="Index"
+            asp-route-CurrentPage="@Html.Raw(Model.CurrentPage+1)"
+            asp-route-SearchString="@Model.SearchString"
+            asp-route-SearchYear="@Model.SearchYear"
+            asp-route-ScoreMin="@Model.ScoreMin"
+            asp-route-ScoreMax="@Model.ScoreMax"
+            asp-route-SortMode="@Model.SortMode"
+            asp-route-OrderDes="@Model.OrderDes">
+                🠆
+            </a>
+        </li>
+        }
+    </ul>
+        
+</nav>
+<p class="font-italic text-center mt-1"><em>Showing @(Model.AmountSelected > Model.TotalItems ? Model.TotalItems : Model.AmountSelected) of @Model.TotalItems found items.</em></p>

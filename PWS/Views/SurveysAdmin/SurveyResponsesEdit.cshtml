@@ -1,0 +1,105 @@
+﻿@using PWS.ViewModels
+@model TastingResponseViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+<br>
+<h1>Edit</h1>
+<br>
+<h4>TastingResponse</h4>
+<br>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SurveyResponsesEdit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="TastingResponses.Id" />
+            <div class="form-group">
+                <input asp-for="TastingResponses.SessionId" value="CreatedSessionId" class="form-control" type="hidden" />
+            </div>
+            <div class="form-group">
+                <input value="@ViewBag.SurveyId" name="surveyId" class="form-control" type="hidden" />
+            </div>
+            <div class="form-group">
+                <label asp-for="TastingResponses.UserName" class="control-label"></label>
+                <input asp-for="TastingResponses.UserName" class="form-control" />
+                <span asp-validation-for="TastingResponses.UserName" class="text-danger"></span>
+            </div>
+            <br>
+            <ul class="nav nav-pills flex-column">
+                <!-- Dropdown for Tasting Items -->
+                <li class="nav-item">
+                    <label for="tastingItemSelect">Select Tasting Item</label>
+                    <select class="form-select mt-2" id="tastingItemSelect" name="tastingId">
+                        <option value=""  class="text-warning" disabled>Blind Tasting Item</option>
+                        @foreach (var item in Model.TastingItems)
+                        {
+                            if(item == Model.TastingResponses.TastingItem)
+                            {
+                                <option selected value="@item.Id">@item.Name</option>
+                            }
+                            else
+                            {<option value="@item.Id">@item.Name</option>}
+                        }
+
+                    </select>
+                </li>
+                <br>
+                <!-- Dropdown for Whiskey Guess -->
+                <li class="nav-item">
+                    <label for="whiskeyGuessSelect">Select Whiskey Guess</label>
+                    <select class="form-select mt-2" id="whiskeyGuessSelect" name="whiskeyId">
+                        <option value="0" selected  class="text-warning" disabled>Guess Whiskey Name</option>
+                        @foreach (var item in Model.Whiskeys)
+                        {
+                            @if(item == Model.TastingResponses.WhiskeyGuess)
+                            {
+                                <option selected value="@item.WhiskeyId">@item.WhiskeyName</option>
+                            }
+                            else
+                            {<option value="@item.WhiskeyId">@item.WhiskeyName</option>}
+                        }
+                        <option value="0">I don't know</option>
+                    </select>
+                </li>
+            </ul>
+            <br>
+            <div class="form-group">
+                <label asp-for="TastingResponses.Aroma" class="control-label"></label>
+                <input asp-for="TastingResponses.Aroma" class="form-control" />
+                <span asp-validation-for="TastingResponses.Aroma" class="text-danger"></span>
+            </div>
+            <br>
+            <div class="form-group">
+                <label asp-for="TastingResponses.Taste" class="control-label"></label>
+                <input asp-for="TastingResponses.Taste" class="form-control" />
+                <span asp-validation-for="TastingResponses.Taste" class="text-danger"></span>
+            </div>
+            <br>
+            <div class="form-group">
+                <label asp-for="TastingResponses.Finish" class="control-label"></label>
+                <input asp-for="TastingResponses.Finish" class="form-control" />
+                <span asp-validation-for="TastingResponses.Finish" class="text-danger"></span>
+            </div>
+            <br>
+            <div class="form-group">
+                <label asp-for="TastingResponses.Notes" class="control-label"></label>
+                <input asp-for="TastingResponses.Notes" class="form-control" />
+                <span asp-validation-for="TastingResponses.Notes" class="text-danger"></span>
+            </div>
+            <br>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<br>
+<div>
+    <a class="btn btn-outline-dark" asp-action="SurveyResponsesIndex" asp-route-surveyId="@Model.TastingItems.First().Survey.Id">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

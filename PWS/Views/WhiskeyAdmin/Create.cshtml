@@ -1,0 +1,110 @@
+﻿@model PWS.Models.Whiskey
+
+@{
+    ViewData["Title"] = "Create";
+}
+@*
+    TODO: 
+        Score
+        - Add a "Not scored" tick; disable all score variables
+        - Hide sub score fields when "DoGenerateScore" is false;
+        - Show sub scores when "DoGenerateScore" is true, disable total score field but have it calculate
+        - When "DoUseSurvey" is true, disable all score fields.
+*@
+<br />
+<h1>Create Whisky</h1>
+<hr />
+<div class="row">
+    <div class="col-md-5">
+        <form method="post" asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <h5>Whisky Details</h5>
+            <hr />
+            <div class="my-2 mb-4 p-2 pt-1">
+
+                <div class="form-group">
+                    <label asp-for="WhiskeyName" class="control-label"></label>
+                    <input asp-for="WhiskeyName" class="form-control" />
+                    <span asp-validation-for="WhiskeyName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ImageFile" class="control-label"></label>
+                    <input type="file" asp-for="ImageFile" accept=".jpg,.png" class="form-control" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+                </div>
+
+                @*Hidden for now*@
+                <div class="form-group" style="display:none">
+                    <label asp-for="WhiskeyImageUrl" class="control-label"></label>
+                    @* <input asp-for="WhiskeyImageUrl" class="form-control" /> *@
+                    <input asp-for="WhiskeyImageUrl" class="form-control" list="WhiskeyUrlList" placeholder="" />
+                    <datalist id="WhiskeyUrlList">
+                        @foreach (var url in Whiskey.GetAllWhiskeyImageURLS())
+                        {
+                            <option value="@url">@url</option>
+                        }
+                    </datalist>
+                    <span asp-validation-for="WhiskeyImageUrl" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="WhiskeyDescription" class="control-label"></label>
+                    <textarea asp-for="WhiskeyDescription" class="form-control"></textarea>
+                    <span asp-validation-for="WhiskeyDescription" class="text-danger"></span>
+                </div>
+            </div>
+
+            <h5>Tasting & Score Details</h5>
+            <hr />
+            <div class="my-2 mb-4 p-2 pt-1">
+                <div class="form-group">
+                    <label asp-for="WhiskeyScoreSetting" class="control-label"></label>
+                    <select class="form-select" asp-for="WhiskeyScoreSetting" asp-items="Html.GetEnumSelectList<WhiskeyScoreSetting>()">
+                        <option selected="selected" value="">Please select</option>
+                    </select>
+                    <span asp-validation-for="WhiskeyScoreSetting" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="WhiskeyFinish" class="control-label"></label>
+                    <input asp-for="WhiskeyFinish" class="form-control" />
+                    <span asp-validation-for="WhiskeyFinish" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="WhiskeyAroma" class="control-label"></label>
+                    <input asp-for="WhiskeyAroma" class="form-control" />
+                    <span asp-validation-for="WhiskeyAroma" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="WhiskeyTaste" class="control-label"></label>
+                    <input asp-for="WhiskeyTaste" class="form-control" />
+                    <span asp-validation-for="WhiskeyTaste" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TotalScore" class="control-label"></label>
+                    <input asp-for="TotalScore" class="form-control" />
+                    <span asp-validation-for="TotalScore" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TastedDate" class="control-label"></label>
+                    <input asp-for="TastedDate" type="date" class="form-control" />
+                    <span asp-validation-for="TastedDate" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group my-2">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+<script src="~/js/whiskeyadmin/create&edit.js"></Script>

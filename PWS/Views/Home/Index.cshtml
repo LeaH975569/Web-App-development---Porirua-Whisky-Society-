@@ -1,0 +1,182 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@*Todo: Have a image that appears when video can't load.*@
+<div class="video-container">
+    @* <div class="video-vignette"></div> *@
+
+    <video id="bottleVideo" loop autoplay muted>
+        <source src="~/images/200401_Whisky Bottle Fire 2_01.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+        <div>
+       <img class="video-logo" id="logoImage" src="~/images/logo_title/Unicorn Logo 1.png" />
+       <h1 style="margin-top:1%;" class="video-bottom-text">Porirua Whisky Society</h1>
+     </div>
+
+    
+</div>
+
+ 
+ <div class="container marketing">
+     <vc:recent-whiskey-cards amount-to-show="5"></vc:recent-whiskey-cards>
+    
+     <vc:recent-tasting-results amount-to-show="6"></vc:recent-tasting-results>
+    <br></br>
+    <hr class="featurette-divider">
+
+    <vc:recent-blog></vc:recent-blog>
+@*     <div class="row featurette">
+      <div class="col-md-7">
+       <h2 class="featurette-heading">Our latest Blog post 
+            <br><span class="text-muted">Post Title. </span></h2>
+        <p class="lead">Some great placeholder content for the first featurette here. Imagine some exciting prose here.</p>
+      </div>
+      <div class="col-md-5">
+        <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#eee"></rect><text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text></svg>
+      </div>
+    </div> *@
+     
+</div>
+
+ 
+ 
+<style>
+    @*Edit the container in layout*@
+    body > .container{
+        margin-left: 0;
+        margin-right: 0;
+        max-width: 100%;
+        padding: 0;
+        align-items:center;
+        overflow:hidden;
+    }
+        .video-container {
+        position: relative;
+        width: 100%;
+        height: auto;
+        /*gradient is to hide the white space on the right due to positioning the video to make the bottle centered*/
+        background: linear-gradient(to right, black,1%,black 5%, transparent, 60% , transparent),
+                    linear-gradient(to left, black,1%,black 5%, transparent, 60% , transparent);
+    }
+        @*TODO: Add media query for small screens, make video take more of the screen*@
+        .video-container video {
+            position: relative;
+            /* width: 110%; */
+            /* right: 7.5%; */
+            width: 98%;
+            right: 1vw;
+            height: auto;
+            z-index: -2;
+            margin: auto
+        }
+        @*
+            Playing around with a vignette / fade on the edges to see if we can have the video at a fixed size by having black borders on the edge that fade in
+            https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_images/Using_CSS_gradients
+            https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
+            Try having the video container background to black
+        *@
+        .video-vignette{
+            position: absolute;
+            /* background: radial-gradient(transparent, black); */
+            width: 100%;
+            height: 99.6%;
+            z-index: -1;
+        }
+
+    @*TODO: Add media query for small screens, logo disappears on smaller devices*@
+    .video-logo {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 5vw;
+        filter: drop-shadow(0 0 0.3rem black);
+        /* filter: drop-shadow(0px 0px 5px #a2a1a1a8) drop-shadow(0 0 0.6rem #000); */
+
+
+        margin-top:1%; 
+        opacity: 0.8;
+        transition: opacity 0.5s ease-in-out;
+    }
+
+    @*Doesn't work, needs to be resized on bigger screens!!*@
+    .video-bottom-text{
+        position: absolute;
+        top: 90%;
+        left: 50%;
+        width: 100%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: #a88181;
+        font-size: 2.5vw;
+        font-family:'Berry Rotunda';
+        /* filter: drop-shadow(0px 0px 5px #a2a1a1a8) drop-shadow(0 0 0.6rem #000); */
+        text-shadow: 0px 0px 5px #000, 0px 0px 10px #000, 0px 0px 15px #000;
+    }
+</style>
+
+
+
+
+@section Scripts {
+<script>
+    const video = document.getElementById('bottleVideo');
+    const logo = document.getElementById('logoImage');
+
+    video.addEventListener('timeupdate', function() {
+        const currentTime = video.currentTime;
+        const duration = video.duration;
+
+        // Slow down the opacity decrease by using a smaller factor
+        const slowFactor = 0.8;  
+        
+        // Calculate opacity with a slower decrease
+        const opacity = 0.9 - (currentTime / duration) * slowFactor;
+
+        // Clamp the opacity value to be between 1 and 0 (just in case)
+        logo.style.opacity = Math.max(opacity, 0).toFixed(2); // Ensures it doesn't go below 0
+    });
+
+</script>
+}
+
+
+@{
+    // Old style sheet
+//     <style> @* Custom home video and gallery to overflow the <div class="container"> *@
+//     .full-width-wrapper {
+//         position: relative;
+//         width: calc(var(--vw, 1vw) * 100);
+//         left: 50%;
+//         right: 50%;
+//         margin-left: calc(var(--vw, 1vw) * -50);
+//         margin-right: calc(var(--vw, 1vw) * -50);
+//     }
+
+//     .video-container {
+//         position: relative;
+//         width: 100%;
+//         height: auto;
+//     }
+
+//         .video-container video {
+//             width: 100%;
+//             height: auto;
+//         }
+
+//     .video-text {
+//         position: absolute;
+//         top: 50%;
+//         left: 50%;
+//         transform: translate(-50%, -50%);
+//         color: white;
+//         font-size: 2rem;
+//         text-align: center;
+//         width: 100%;
+//         padding: 0 15px;
+//     }
+// </style>
+}
+

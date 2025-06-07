@@ -1,0 +1,105 @@
+﻿@model List<Survey>
+
+<div class="mb-1 " style="display: flex; align-items: baseline; clear: both;">
+    <h2 class="mt-5">Recent Whisky Tasting Results</h2>
+    <h1><i class="bi bi-person-heart ms-3"></i></h1>
+</div>
+
+@* style="flex: none; *@
+
+<div class="row justify-content-start" id="whisky-cards-row">
+    @foreach (var survey in Model)
+    {
+        <div class="col-lg-2 col-md-4 mb-3 whisky-card">
+            <!-- Each card spans 2 columns in large screens, 4 in medium -->
+            <div class="card h-100 text-center d-flex flex-column">
+                <!-- Card Body -->
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <!-- Title section -->
+                    <div class="card-title-section">
+                        <h5 class="card-title">@survey.End.ToString("dd MMMM yyyy")</h5>
+                        <h4>@survey.Title</h4>
+                        <h5>@survey.Subtitle</h5>
+                    </div>
+
+                    <!-- Divider -->
+                    <hr class="my-1">
+
+                    <!-- Tasting Results List -->
+                    <ol class="text-muted mt-sm-1 fs-5">
+                        @foreach (var ti in survey.Tastings.OrderByDescending(x => x.GetAverageScore()))
+                        {
+                            <li>
+                                <a asp-controller="WhiskeyDatabase" asp-action="Whiskey" asp-route-id="@ti.Whiskey.WhiskeyId" class="text-secondary-emphasis">
+                                    @ti.Whiskey.WhiskeyName
+                                </a>
+                                <br>
+                                @ti.GetAverageScore().ToString("F0")/100
+                            </li>
+                        }
+                    </ol>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .card-title-section {
+        /* No fixed height, let content grow */
+    }
+
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex: none;
+    }
+
+    .card {
+        display: flex;
+        flex-direction: column;
+        height: 100%; /* Ensures the card takes full height of the parent */
+    }
+
+    .whisky-card {
+        display: flex;
+        flex-direction: column;
+    }
+ 
+</style>
+
+
+
+@* <div class="row justify-content-start">
+    @foreach (var survey in Model)
+    {
+        <div class="col-lg-2 col-md-4 mb-3">
+            <div class="text-center">
+                <!-- Title section with fixed height -->
+                <div class="d-flex flex-column justify-content-between" style="height: 200px;">
+                    <h4>@survey.End.ToShortDateString()</h4>
+                    <h4>@survey.Title</h4>
+                    <h5>@survey.Subtitle</h5>
+                </div>
+                
+                <!-- Divider -->
+                <hr class="my-3">
+
+                <!-- Tasting Results List -->
+                <ol class="text-muted mt-sm-1 fs-5">
+                    @foreach (var ti in survey.Tastings.OrderByDescending(x => x.GetAverageScore()))
+                    {
+                    // score can also be added here easily with ti.GetAverageScore()
+                        <li>
+                            <a asp-controller="WhiskeyDatabase" asp-action="Whiskey" asp-route-id="@ti.Whiskey.WhiskeyId" class="text-secondary-emphasis">@ti.Whiskey.WhiskeyName </a>
+                            <br> 
+                            @ti.GetAverageScore().ToString("F0")/100
+                        </li>
+                    }
+                </ol>
+            </div>
+        </div>
+    }
+</div> *@
+ 

@@ -1,0 +1,89 @@
+﻿@model IEnumerable<PWS.Models.Blog>
+
+@{
+    ViewData["Title"] = "Blogs";
+}
+@*
+    TODO: Images look funky with a low horizontal res / on mobile, fix that!
+*@
+<br />
+<h2>All posts</h2>
+<hr />
+<div class="d-flex flex-column">
+    @foreach (var item in Model)
+    {
+        <a asp-controller="Blog" asp-action="BlogEntry" asp-route-id="@item.Id" style="color: inherit; text-decoration:inherit">
+            <div class="card mb-4">
+                <div class="d-flex d-inline-flex g-0" style="height: 15em">
+                    <div class="flex-shrink-0" style="width: 20em">
+                        @* <img src="~/images/Whiskey/Untitled1.jpg" class="img-fluid rounded-start align-baseline border-secondary rounded-1" alt="..." style="height:100%; border-right:solid 1px"> *@
+                        <div alt="" class="img-fluid rounded-start align-baseline border-secondary rounded-1" style="background:url('@item.ImageUrl') center no-repeat; background-size: 100% auto; height: 100%; border-right:solid 1px"></div>
+                    </div>
+                    <div class="d-flex flex-column flex-grow-1">
+                        <div class="card-body" style="overflow:hidden">
+                            <h5 class="card-title fw-bold" style="overflow:hidden">@item.Title</h5>
+                            <p class="card-text">@item.Summary @(item.Summary.Count() > Blog.SummaryCharacterCount - 10 ? ". . ." : "")</p>
+                        </div>
+                        <div class="card-footer text-muted" style="font-size:10pt">
+                            @item.PublishedDate
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </a>
+    }
+    
+
+    @{
+    //     <a asp-controller="Blog" asp-action="BlogEntry" asp-route-id="1" style="color: inherit; text-decoration:inherit">
+    //     <div class="card mb-4">
+    //         <div class="d-flex d-inline-flex g-0">
+    //             <div class="">
+    //                 <img src="~/images/Whiskey/Untitled1.jpg" class="img-fluid rounded-start align-baseline border-secondary rounded-1" alt="..." style="height:100%; border-right:solid 1px">
+    //             </div>
+    //             <div class="d-flex flex-column flex-grow-1">
+    //                 <div class="card-body flex-grow-2">
+    //                     <h5 class="card-title">Dramfest 2023</h5>
+    //                     <p class="card-text">Well, this was a boozefest.. In March 2023 after a hiatus due to Covid, the bi-annual Dramfest was once again being held at the...</p>
+    //                 </div>
+    //                 <div class="card-footer text-muted">
+    //                     Posted 2 days ago
+    //                 </div>
+    //             </div>
+
+    //         </div>
+
+    //     </div>
+    // </a>
+    // @for (var i = 0; i < 5; i++)
+    // {
+    //      <a asp-controller="Blog" asp-action="BlogEntry" asp-route-id="1" style="color: inherit; text-decoration:inherit">
+    //         <div class="card mb-4">
+    //             <div class="d-flex d-inline-flex g-0">
+    //                 @* Image *@
+    //                 <div class="">
+    //                     <img src="~/images/Whiskey/Untitled.jpg" class="img-fluid rounded-start align-baseline border-secondary rounded-1" alt="..." style="height:100%; border-right:solid 1px">
+    //                 </div>
+    //                 <div class="d-flex flex-column flex-grow-1">
+    //                     <div class="card-body flex-grow-2">
+    //                         @* Title *@
+    //                         <h5 class="card-title">Dramfest 2023</h5>
+    //                         @* Preview of content *@
+    //                         <p class="card-text">Well, this was a boozefest.. In March 2023 after a hiatus due to Covid, the bi-annual Dramfest was once again being held at the...</p>
+    //                     </div>
+    //                     @* Date last posted *@
+    //                     <div class="card-footer text-muted">
+    //                         Posted 2 days ago
+    //                     </div>
+    //                 </div>
+
+    //             </div>
+
+    //         </div>
+    //     </a>
+    // }
+    }
+    
+</div>

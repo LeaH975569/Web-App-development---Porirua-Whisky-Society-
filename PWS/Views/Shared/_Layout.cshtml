@@ -1,0 +1,127 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+ 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PWS</title>
+
+    @*--- Style Sheets ---*@
+    <link rel="stylesheet" href="~/css/BootsWatchTheme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/lightbox.css" /> 
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/PWS.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/bootstrap-icons.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
+    @* <link rel="icon" href="favicon.ico?v=2" type="image/x-icon" /> *@
+    <link rel="bookmark icon" href="~/favicon.ico" type="image/x-icon">
+</head>
+<body class="mb-md-5">
+    <header>
+        <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark" id="nav">
+            <div class="container-fluid">
+                <a asp-controller="home" asp-action="index">
+                    <img src="~/images/logo_title/Unicorntitle.png" alt="PWS Logo"
+                         style="height:10VH; margin-bottom:-.5%;margin-top:-.5%; margin-right:.5%; max-height: 15VH;min-height: 70px;" />
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse ms-3"  id="navbarColor01">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item me-2">
+                            <a class="nav-link text-secondary"  asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="nav-link text-secondary" asp-area="" asp-controller="Home" asp-action="AboutUs">About us</a>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="nav-link text-secondary" asp-area="" asp-controller="Gallery" asp-action="Index">Photo Gallery</a>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="nav-link text-secondary" asp-area="" asp-controller="Blog" asp-action="Index">Blog</a>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="nav-link text-secondary" asp-area="" asp-controller="WhiskeyDatabase" asp-action="Index">Whisky</a>
+                        </li>
+
+                        <vc:survey-years></vc:survey-years>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item dropdown ms-2">
+                                <a class="nav-link text-warning dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Admin</a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" asp-area="" asp-controller="SurveysAdmin" asp-action="Index">Survey</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" asp-area="" asp-controller="WhiskeyAdmin" asp-action="Index">Whisky</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" asp-area="" asp-controller="BlogAdmin" asp-action="Index">Blog</a>
+
+                                </div>
+                            </li>
+                        }       
+                        
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container flex-grow-1 mb-5">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main> 
+    </div>
+ 
+
+    <br>
+    <br>
+    <br>
+
+
+
+
+
+     
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        //sets a delay so correct size can be calculated avter a maximize event
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        //sets the --vw css property to 1% of visible page width
+        async function setVw() {
+            //first set it to 1vw to get an aproximation of the correct size after resize event so vertical scrollbars show if needed
+            document.documentElement.style.setProperty('--vw', `1vw`);
+            //wait for resize to happen
+            await sleep(500)
+            //set --vw back to 1% of the available view
+            var vw = document.documentElement.clientWidth / 100;
+            document.documentElement.style.setProperty('--vw', `${vw}px`);
+        }
+
+        setVw();
+        window.addEventListener('resize', setVw);
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+<footer class="border-top footer text-muted mt-5">
+    <div class="container">
+        <div class="fs-5">
+            &copy; 2024 - PWS - <a class="text-decoration-none text-info" asp-controller="Home" asp-action="Contact">Contact Us</a>
+            <partial name="_LoginPartial" />
+        </div>
+    </div>
+</footer>
+</html>
+
+
+ 

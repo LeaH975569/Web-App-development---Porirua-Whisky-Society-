@@ -1,0 +1,1 @@
+This is where whisky images are stored.

@@ -1,0 +1,40 @@
+﻿@model PWS.Models.TastingItem
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+
+<br>
+<h1>Delete</h1>
+<br>
+<h3>Are you sure you want to delete this?</h3>
+<br>
+
+<div>
+    <h4>Tasting Item</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-3">
+           Display Name of the Tasting Item
+        </dt>
+        <dd class = "col-sm-9">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+    </dl>
+    <dl class="row">
+        <dt class="col-sm-3">
+            Name of the Whisky
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Whiskey.WhiskeyName)
+        </dd>
+    </dl>
+    
+    <br>
+    <form asp-action="ItemDelete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a class="btn btn-outline-dark"  asp-action="Edit" asp-route-id="@Model.Survey.Id">Back to List</a>
+    </form>
+</div>

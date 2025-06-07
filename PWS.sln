@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PWS", "PWS\PWS.csproj", "{CC33B9F1-1A8E-49FC-AB17-EE5D8C477CB6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PWSUnitTests", "PWSUnitTests\PWSUnitTests.csproj", "{18F0A207-8A92-4240-A66C-53059F31746A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CC33B9F1-1A8E-49FC-AB17-EE5D8C477CB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC33B9F1-1A8E-49FC-AB17-EE5D8C477CB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC33B9F1-1A8E-49FC-AB17-EE5D8C477CB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC33B9F1-1A8E-49FC-AB17-EE5D8C477CB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18F0A207-8A92-4240-A66C-53059F31746A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18F0A207-8A92-4240-A66C-53059F31746A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18F0A207-8A92-4240-A66C-53059F31746A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18F0A207-8A92-4240-A66C-53059F31746A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {62345764-44A5-4087-A2E4-9079D784E465}
+	EndGlobalSection
+EndGlobal

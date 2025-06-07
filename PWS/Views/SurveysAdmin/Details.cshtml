@@ -1,0 +1,118 @@
+﻿@model PWS.Models.Survey
+
+@{
+    ViewData["Title"] = "Details";
+}
+<br>
+<h1>Details</h1>
+<br>
+<div class="row">
+    <div class="col-sm-8">
+        <h4>Survey</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Title)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Title)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Subtitle)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Subtitle)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Start)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Start)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.End)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.End)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Published)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Published)
+            </dd>
+        </dl>
+    </div>
+    <div class="col-sm-4 text-center">
+        <img src="data:image/png;base64, @ViewBag.QR" />
+        <br />
+        <a id="go" class="btn btn-primary mb-3 mx-1" href="@ViewBag.URL">Go to Survey</a>
+        <button class="btn btn-info mb-3 mx-1" onclick="cpyclip()">Copy to clipboard</button>
+        @if (Model.IsOpen())
+        {
+            <h4 class="text-success mb-3">Survey Open</h4>
+        }
+        else
+        {
+            <h4 class="text-danger mb-3">Survey Closed</h4>
+        }
+    </div>
+
+</div>
+
+
+<h3>Associated Tasting Items</h3>
+<a class="btn btn-primary mb-3" onclick="show_hide_whisky()">Hide/Show Whisky</a>
+<table class="table" id="itemstable">
+    <colgroup>
+        <col id="name" />
+        <col id="Whisky" />
+    </colgroup>
+    <thead>
+        <tr>
+            <th>
+                Display Name
+            </th>
+            <th>
+                Whiskey Name
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Tastings)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Whiskey.WhiskeyName)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<br>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-info">Edit</a> |
+    <a asp-action="Index" class="btn btn-outline-dark">Back to List</a>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function show_hide_whisky() {
+            const table = document.getElementById('itemstable')
+            const column = document.getElementById('Whisky')
+            if (column) {
+                column.style.visibility = column.style.visibility == "collapse" ? "" : "collapse";
+            }
+        }
+        function cpyclip() {
+            navigator.clipboard.writeText($('#go').attr('href'));
+
+        }
+    </script>
+}

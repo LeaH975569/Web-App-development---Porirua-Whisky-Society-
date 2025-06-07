@@ -1,0 +1,521 @@
+﻿@model PWS.Models.Survey
+
+@{
+    ViewData["Title"] = "Index";
+}
+<br>
+<h1>Blind Tasting Survey</h1>
+<br>
+<form  id="submitTastingResponse" novalidate style="width:97%">
+
+        <h2 style="margin: 0;">@Html.DisplayFor(model => model.Title)</h2>
+        <h3 style="margin: 0;">@Html.DisplayFor(model => model.Subtitle)</h3>
+
+    <br>
+    <div class="form-group has-danger">
+        <label class="form-label" for="inputFullName">Your Full Name</label>
+        <input type="text" class="form-control" id="inputFullName" name="FullName" required>
+        <div class="invalid-feedback">
+            Sorry, Full Name must not be empty, or contain numbers or symbols and should be within 30 characters.
+        </div>
+    </div>
+    <br>
+    <ul class="nav nav-pills flex-column">
+        <!-- Dropdown for Tasting Items -->
+        <li class="nav-item">
+            <label for="tastingItemSelect">Select Tasting Item</label>
+            <select class="form-select mt-2" id="tastingItemSelect">
+                <option value="" selected class="text-warning" disabled>Select Item</option>
+                @foreach (var item in Model.Tastings)
+                {
+                    <option value="@item.Id" >@item.Name</option>
+                }
+              
+            </select>
+        </li>
+       
+    </ul>
+    <br />
+    <div id="description" class="d-none">
+        Description:
+        <div id="descriptiontxt"></div>
+    </div>
+    <div class="form-group has-danger">
+        <label class="col-form-label mt-4" for="aromaInput">Aroma Score</label>
+        <input type="number" id="aromaInput" class="form-control is-invalid" min="0" max="100" step="1" value="50" aria-label="Aroma Score" oninput="updateAromaSlider(this.value)">
+        <div class="invalid-feedback">
+            Please enter a valid number between 0 - 100.
+        </div>
+        <br>
+        <input type="range" id="aromaSlider" class="custom-form-range" min="0" max="100" step="1" value="50" oninput="updateAromaInput(this.value)">
+    </div>
+
+    <div class="form-group has-danger">
+        <label class="col-form-label mt-4" for="tasteInput">Taste Score</label>
+        <input type="number" id="tasteInput" class="form-control is-invalid" min="0" max="100" step="1" value="50" aria-label="Taste Score" oninput="updateTasteSlider(this.value)">
+        <div class="invalid-feedback">
+            Please enter a valid number between 0 - 100.
+        </div>
+        <br>
+        <input type="range" id="tasteSlider" class="custom-form-range" min="0" max="100" step="1" value="50" oninput="updateTasteInput(this.value)">
+    </div>
+
+    <div class="form-group has-danger">
+        <label class="col-form-label mt-4" for="finishInput">Finish Score</label>
+        <input type="number" id="finishInput" class="form-control is-invalid" min="0" max="100" step="1" value="50" aria-label="Finish Score" oninput="updateFinishSlider(this.value)">
+        <div class="invalid-feedback">
+            Please enter a valid number between 0 - 100.
+        </div>
+        <br>
+        <div><input type="range" id="finishSlider" class="custom-form-range" min="0" max="100" step="1" value="50" oninput="updateFinishInput(this.value)"></div>
+        
+    </div>
+
+    <br>
+    <div class="container">
+        <div class="row justify-content-around">
+@*             <div class="col-4">
+                <div class="form-group">
+                    <label for="totalScore" class="col-form-label mt-4">Total Score</label>
+                    <input type="text" id="totalScore" class="form-control" disabled>  
+                </div>
+            </div> *@
+            <div class="col-4">
+                <div class="form-group">
+                    <label for="averageScore" class="col-form-label mt-4">Average Score</label>
+                    <input type="text" id="averageScore" class="form-control" disabled>
+                </div>     
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <ul class="nav nav-pills flex-column">
+    <!-- Dropdown for Whiskey Guess -->
+    <li class="nav-item">
+        <label for="whiskeyGuessSelect">Select Whiskey Guess</label>
+        <select class="form-select mt-2" id="whiskeyGuessSelect">
+            <option value="0" selected class="text-warning" disabled>Guess Whiskey Name</option>
+            @{
+                var rand = new Random();
+            }
+            @foreach (var item in Model.Tastings.OrderBy(x => rand.Next()))
+            {
+                <option value="@item.Whiskey.WhiskeyId">@item.Whiskey.WhiskeyName</option>
+            }
+            <option value="0">I don't know</option>
+        </select>
+     </ul>
+    <br>
+    <div>
+        <label for="exampleTextarea" class="form-label mt-4">Whisky Notes</label>
+        <textarea class="form-control" id="exampleTextarea" rows="3" data-lt-tmp-id="lt-180406" spellcheck="true" data-gramm="false"></textarea>
+    </div>
+
+    <br>
+    <input type="hidden" value="0" id="responseId" />
+    <input type="hidden" value="0" id="tastingId" />
+   
+    <button id="submitButton" type="button" class="btn btn-primary" disabled="true" onclick="save()">Submit</button>
+</form>
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="SaveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
+        <div class="toast-body">
+            Response Saved
+        </div>
+    </div>
+    <div id="InvalidToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
+        <div class="toast-body">
+            Auto save failed make sure all inputs are valid
+        </div>
+    </div>
+</div>
+
+<br>
+<br>
+
+
+@section Scripts {
+ <script>
+        var timeout
+        var isValid = true;
+        $(document).ready(function () {
+            // Update scores on input and slider change for aroma, taste, and finish
+            $('#aromaInput, #tasteInput, #finishInput').on('change keyup paste mouseup', updateScores);
+            //Autosave event clears existing timed save when an input is changed then waits a set amount of ms inactivity before saving to avoid spaming the api
+            $('#aromaInput, #tasteInput, #finishInput, #whiskeyGuessSelect, #exampleTextarea').on('change', function () { clearTimeout(timeout);timeout = setTimeout(function () { save() }, 30000) });
+            $('#aromaSlider, #tasteSlider, #finishSlider').change(updateScores);
+            $('#inputFullName').on('change', validateFullName)
+            // Call updateScores on initial load to set default values
+            updateScores();
+
+            // Initialize sliders with color and progress on page load
+            updateSliderColor('aromaSlider', $('#aromaSlider').val());
+            updateSliderColor('tasteSlider', $('#tasteSlider').val());
+            updateSliderColor('finishSlider', $('#finishSlider').val());
+
+            // Score Validation for Aroma, Taste, Finish on Input
+            var inputs = ['aromaInput', 'tasteInput', 'finishInput'];
+            inputs.forEach(function (inputId) {
+                var input = document.getElementById(inputId);
+                input.addEventListener('input', function () {
+                    validateScore(input);
+                });
+            });
+            // Initial validation on page load for pre-set values
+            ['aromaInput', 'tasteInput', 'finishInput'].forEach(function (inputId) {
+                var input = document.getElementById(inputId);
+                validateScore(input);
+            });
+        });
+
+        // Function to calculate and display total and average score
+        function updateScores() {
+            var aromaScore = parseFloat($('#aromaInput').val() || 0);
+            var tasteScore = parseFloat($('#tasteInput').val() || 0);
+            var finishScore = parseFloat($('#finishInput').val() || 0);
+
+            var totalScore = aromaScore + tasteScore + finishScore;
+            var averageScore = totalScore / 3;
+
+            // Update the total score value to show "150.0 /300"
+            $('#totalScore').val(totalScore.toFixed(1) + " / 300");
+
+            // Update the average score (if needed)
+            $('#averageScore').val(averageScore.toFixed(0) + " / 100");
+        }
+
+        function updateAromaInput(val) {
+            document.getElementById('aromaInput').value = val;
+            updateSliderColor('aromaSlider', val);
+            updateScores();  // Call updateScores to update total and average scores
+        }
+
+        function updateAromaSlider(val) {
+            document.getElementById('aromaSlider').value = val;
+            updateSliderColor('aromaSlider', val);
+            updateScores();  // Call updateScores to update total and average scores
+        }
+
+        function updateTasteInput(val) {
+            document.getElementById('tasteInput').value = val;
+            updateSliderColor('tasteSlider', val);
+            updateScores();  // Call updateScores to update total and average scores
+        }
+
+        function updateTasteSlider(val) {
+            document.getElementById('tasteSlider').value = val;
+            updateSliderColor('tasteSlider', val);
+            updateScores();  // Call updateScores to update total and average scores
+        }
+
+        function updateFinishInput(val) {
+            document.getElementById('finishInput').value = val;
+            updateSliderColor('finishSlider', val);
+            updateScores();  // Call updateScores to update total and average scores
+        }
+
+        function updateFinishSlider(val) {
+            document.getElementById('finishSlider').value = val;
+            updateSliderColor('finishSlider', val);
+            updateScores();  // Call updateScores to update total and average scores
+        }
+
+        function updateSliderColor(sliderId, value) {
+            var sliderEl = document.getElementById(sliderId);
+            var color;
+
+            // Choose the color for each slider based on the ID
+            switch (sliderId) {
+                case 'aromaSlider':
+                    color = '#FF8282';  // Aroma Slider Color
+                    break;
+                case 'tasteSlider':
+                    color = '#18bc9c';  // Taste Slider Color
+                    break;
+                case 'finishSlider':
+                    color = '#3498db';  // Finish Slider Color
+                    break;
+            }
+            
+            // Calculate the percentage of the slider value
+            var percentage = (value / sliderEl.max) * 100;
+
+            // Apply the gradient background using the chosen color
+            sliderEl.style.background = `linear-gradient(90deg, ${color} ${percentage}%, #e0e0e0 ${percentage}%)`;
+        }
+
+        // Initial adjustment for thumb size (optional based on your needs)
+        function adjustThumbHeight() {
+            // Add any additional code here if needed
+        }
+ 
+        // Adjust on window resize
+        window.addEventListener('resize', adjustThumbHeight);
+
+        //Function to save and load based on input change of tasting item
+        $('#tastingItemSelect').change(function () 
+        {
+            //check if the inputs are valid for saving
+            if (checkVal()) {
+                //responseId is only set after the firt load so dont save if there is no item that is being changed from
+                if ($('#responseId').val() > 0)
+                    save();
+                load();
+            }
+            else {
+                // if the inputs arent valid change the dropdown back to the previous selection and alert the user
+                $('#tastingItemSelect').val($('#tastingId').val()).change();
+                alert("Cannot switch with invalid inputs")
+            }
+        });
+
+
+    // Function to validate Scores
+    function validateScore(input) {
+        var value = parseFloat(input.value);
+        var isInvalid = isNaN(value) || value < 0 || value > 100 || !/^\d+(\.\d+)?$/.test(input.value);
+        if (isInvalid) {
+            input.classList.add('is-invalid');
+        } else {
+            input.classList.remove('is-invalid');
+        }
+    }
+
+    // Form Submission Validation
+
+
+    function checkVal() {        // Validate Scores on Form Submission
+        if ($('#responseId').val() > 0)
+            validateFullName();
+        if (document.getElementsByClassName("is-invalid").length > 0)
+            return false;
+            else return true;
+    }
+
+        // Function to validate Full Name
+        function validateFullName() {
+            console.log('name val test ')
+            var fullNameInput = document.getElementById('inputFullName');
+            var nameValue = fullNameInput.value;
+            var invalidSymbols = /[~!#$%^&*()_+{}|?":><\/\*\-.,./'\\\[\]=@@]/;
+            var isInvalidName = nameValue === '' ||
+                nameValue.length > 30 ||
+                /[0-9]/.test(nameValue) || // Contains numbers
+                invalidSymbols.test(nameValue); // Contains odd symbols
+
+            if (isInvalidName) {
+                fullNameInput.classList.add('is-invalid');
+                return false;
+            } else {
+                fullNameInput.classList.remove('is-invalid');
+                return true;
+            }
+        }
+
+
+
+
+        function load() {
+            $.ajax({
+                type: "POST",
+                url: "/Api/TastingResponse/Get",
+                data: JSON.stringify({ sessionId: "@ViewBag.SessionId", tastingId: $('#tastingItemSelect').find('option:selected').val() }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    updateAromaInput(data[0].aroma);
+                    updateAromaSlider(data[0].aroma);
+                    updateFinishInput(data[0].finish);
+                    updateFinishSlider(data[0].finish);
+                    updateTasteInput(data[0].taste);
+                    updateTasteSlider(data[0].taste);
+                    $('#exampleTextarea').val(data[0].notes);
+                    $('#responseId').val(data[0].id);
+                    $('#tastingId').val(data[0].tastingItem.id);
+                    if (data[0].whiskeyGuess == null) {
+                        $('#whiskeyGuessSelect').val(0).change();
+                    }
+                    else {
+                        $('#whiskeyGuessSelect').val(data[0].whiskeyGuess.whiskeyId).change();
+                    }
+                    
+                    if ($('#inputFullName').val().length < 1) {
+                        $('#inputFullName').val(data[0].userName);
+                    }
+                    if (data[0].tastingItem.description == null) {
+                        $('#description').addClass('d-none');
+
+                    }
+                    else {
+                        $('#description').removeClass('d-none');
+                        $('#descriptiontxt').text(data[0].tastingItem.description);
+                    }
+                    checkVal();
+                    $('#submitButton').prop('disabled', false);
+                },
+                error: function (result) {
+                    alert("Load failed");
+                }
+            });
+        }
+        function save() {
+            if (checkVal()) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Api/TastingResponse/Save",
+                    data: JSON.stringify({
+                        Id: $('#responseId').val(),
+                        sessionId: "@ViewBag.SessionId",
+                        userName: $('#inputFullName').val(),
+                        tastingItem: $('#tastingId').val(),
+                        aroma: $('#aromaInput').val(),
+                        taste: $('#tasteInput').val(),
+                        finish: $('#finishInput').val(),
+                        notes: $('#exampleTextarea').val(),
+                        whiskeyGuess: $('#whiskeyGuessSelect').find('option:selected').val()
+                    }),
+                    success: function (data) {
+                        console.log("saved")
+                        var toast = new bootstrap.Toast(document.getElementById('SaveToast'))
+                            toast.show()
+                    },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "text",
+                    error: function (result) {
+                        alert("Save Failed");
+                    }
+                });
+            }
+            else {
+                var toast = new bootstrap.Toast(document.getElementById('InvalidToast'))
+                toast.show()
+                console.log("error autosaving invalid input")
+            }
+        }
+    </script>
+
+}
+
+
+
+
+<style>
+    .form-control:disabled {
+        background-color: transparent;
+    }
+
+    /* Slider Appearance */
+    .custom-form-range {
+        -webkit-appearance: none; /* Chrome */
+        -moz-appearance: none; /* Firefox */
+        appearance: none; /* Default for other browsers */
+        width: 100%;
+        height: 20px;
+        border-radius: 5px;
+        background: #e0e0e0;
+        outline: none;
+        transition: background 0.3s ease-in-out;
+        cursor: pointer;
+
+    }
+
+        /* Chrome/Edge */
+        .custom-form-range::-webkit-slider-runnable-track {
+            height: 10px;
+            border-radius: 5px;
+        }
+
+        /* Firefox */
+        .custom-form-range::-moz-range-track {
+            height: 10px;
+            border-radius: 5px;
+        }
+
+        /* Slider Thumbs */
+        .custom-form-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 35px;
+            width: 35px;
+            border-radius: 50%;
+            background-size: contain;
+            background-position: center;
+            background-color: transparent;
+            cursor: pointer;
+            position: relative;
+            top: 50%;
+            -ms-transform: translateY(-50%);
+            transform: translateY(-50%);
+            -webkit-transition: background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+            transition: background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+            appearance: none;
+        }
+
+
+        .custom-form-range::-moz-range-thumb {
+            height: 35px;
+            width: 35px;
+            border-radius: 50%;
+            background-size: contain;
+            background-position: center;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            -moz-transition: background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+            transition: background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out -moz-appearance none;
+            appearance: none;
+        }
+
+
+
+
+
+
+    /* Aroma Slider */
+    #aromaSlider::-webkit-slider-thumb {
+        background-image: url('/svg/suit-club-fill.svg');
+    }
+
+
+    #aromaSlider::-moz-range-thumb {
+        background-image: url('/svg/suit-club-fill.svg');
+    }
+
+    /* Taste Slider */
+    #tasteSlider::-webkit-slider-thumb {
+        background-image: url('/svg/suit-diamond-fill.svg');
+    }
+
+    #tasteSlider::-moz-range-thumb {
+        background-image: url('/svg/suit-diamond-fill.svg');
+    }
+
+    /* Finish Slider */
+    #finishSlider::-webkit-slider-thumb {
+        background-image: url('/svg/suit-spade-fill.svg');
+    }
+
+    #finishSlider::-moz-range-thumb {
+        background-image: url('/svg/suit-spade-fill.svg');
+    }
+
+
+         
+    /* Aroma Slider */
+    #aromaSlider {
+        --slider-color: #FF8282; /* Aroma slider color */
+    }
+
+    /* Taste Slider */
+    #tasteSlider {
+        --slider-color: #18bc9c; /* Taste slider color */
+    }
+
+    /* Finish Slider */
+    #finishSlider {
+        --slider-color: #3498db; /* Finish slider color */
+    }
+
+
+</style>

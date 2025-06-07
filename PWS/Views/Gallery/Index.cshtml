@@ -1,0 +1,62 @@
+﻿@model IEnumerable<GalleryImage>
+
+@{
+    ViewData["Title"] = "Gallery";
+}
+
+<br />
+<h2 class="my-4">Our Gallery</h2>
+<div class="full-width-wrapper">
+    <div class="gallery">
+        @foreach (var image in Model)
+        {
+            <div class="gallery-item">
+                <a href="@image.FilePath" data-lightbox="gallery" data-title="@image.FileName">
+                    <img src="@image.FilePath" alt="@image.FileName" />
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .gallery {
+        -webkit-column-count: 3;
+        -webkit-column-gap: 20px; /* Adjust for horizontal gap */
+        -moz-column-count: 3;
+        -moz-column-gap: 20px; /* Adjust for horizontal gap */
+        column-count: 3;
+        column-gap: 20px; /* Adjust for horizontal gap */
+    }
+
+    .gallery-item {
+        break-inside: avoid;
+        margin-bottom: 30px; /* Adjust for vertical gap */
+    }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+    .full-width-wrapper {
+        width: 100%;
+        overflow: visible;
+    }
+</style>
+
+@section scripts{
+    <script src="~/js/lightbox.js"></script>
+    <script>
+        lightbox.option({
+            'resizeDuration': 300,
+            'wrapAround': true,
+            'alwaysShowNavOnTouchDevices': true,
+            'fadeDuration': 300,
+            'imageFadeDuration': 100
+        });
+    </script>
+
+}
+

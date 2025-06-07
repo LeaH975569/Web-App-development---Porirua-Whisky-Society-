@@ -1,0 +1,34 @@
+﻿@model IEnumerable<Whiskey>
+<h2 class="mt-5">Whisky We've Recently Tasted:</h2>
+<div class="d-flex flex-row gap-3 recentItemView border-top border-bottom py-3 my-3" style="">
+    @foreach (var whisky in Model)
+    {
+        <a class="text-decoration-none" asp-controller="WhiskeyDatabase" asp-action="Whiskey" asp-route-id="@whisky.WhiskeyId">
+            <div class="card whiskeyCard">
+                @*WhiskyImage*@
+                <div class="card-img-top" alt="" style="position:relative; background:url('@whisky.WhiskeyImageUrl') center no-repeat; background-size: auto 100%;"></div>
+                <hr style="margin: 0; padding: 0" />
+                <div class="card-body">
+                    @*WhiskyName*@
+                    <div class="card-title fw-bold" style="height:3em;">@whisky.WhiskeyName</div>
+                    @* <b class="card-title" style="height:18em; overflow:hidden">@whisky.WhiskeyName</b> *@
+                    @*WhiskyScore*@
+                    <p class="my-2">
+                        @if (whisky.HasBeenTasted)
+                        {
+                            <i>Score:</i> <b>@whisky.GetScoreString()</b>
+                            <br />
+                            <i>Tasted On:</i> <b>@whisky.GetTasteDateString()</b>
+                        }
+                        else
+                        {
+                            <i>Not Tasted Yet</i>
+                        }
+                    </p>
+                    @*Mini Whisky Description*@
+                    @* <p class="card-text">@whisky.MiniDescription</p> *@
+                </div>
+            </div>
+        </a>
+    }
+</div>

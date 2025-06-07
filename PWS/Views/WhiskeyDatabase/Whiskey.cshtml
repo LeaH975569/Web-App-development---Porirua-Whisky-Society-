@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Whisky"; // TODO: Make it reflect the whisky being viewed
+}
+@model WhiskeyViewModel
+
+<a href="javascript:window.history.back();" class="btn btn-lg p-0 mt-4 text-muted"><i class="bi bi-arrow-left-circle"></i> Back</a>
+<nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: '>';">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="index">WhiskyDatabase</a></li>
+        <li class="breadcrumb-item"><a asp-action="index" asp-route-searchYear="@Model.Whiskey.TastedDate?.Year">@Model.Whiskey.TastedDate?.Year</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Whiskey.WhiskeyName</li>
+    </ol>
+</nav>
+
+<br />
+<div class="row gap-3">
+    <div class="col-4 border-secondary" style="height: 500px; border-right: solid 1px;">
+        @*Image*@
+        <div class="" alt="" style="position:relative; background:url('@Model.Whiskey.WhiskeyImageUrl') center no-repeat; background-size: auto 100%; width:100%; height:100%; "></div>
+    </div>
+
+    <div class="col-6">
+        @*Text*@
+        <h2>@Model.Whiskey.WhiskeyName</h2>
+        <h4><i>Score:</i> <b>@Model.Whiskey.TotalScore</b></h4>
+
+        @*Make the below clickable to view the results page*@
+        <div class="border-secondary py-2" style="width:100%; border-bottom: solid 1px; border-top: solid 1px;">
+            @if (Model.Whiskey.WhiskeyScoreSetting == WhiskeyScoreSetting.SurveyResults)
+            {
+                <span>Tasted On: <a asp-controller="TastingResults" asp-action="Index" asp-route-year="@Model.Whiskey.TastedDate.Value.Year">@Model.Whiskey.GetTasteDetailsString()</a></span>
+            }
+            else
+            {
+                @Model.Whiskey.GetTasteDetailsString()
+            }
+        </div>
+        @*Description*@
+        <p class="my-2">
+            @Model.Whiskey.WhiskeyDescription
+        </p>
+    </div>
+</div>

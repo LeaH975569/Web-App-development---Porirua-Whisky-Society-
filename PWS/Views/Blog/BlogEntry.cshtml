@@ -1,0 +1,149 @@
+﻿@using Microsoft.AspNetCore.Http;
+@model Blog
+@{
+    ViewData["Title"] = $"{Model.Title} - Blog";
+    string pageURL = Context.Request.Host + Context.Request.Path;
+}
+@*
+    TODO: The padding on the 'card' with low horizontal res / on mobile looks bad. Either removing padding when at lower horizontal res or replace it with max width
+*@
+
+<br />
+<div class="mx-auto" style="max-width: 980px; min-width:0">
+    <a asp-controller="Blog" asp-action="index" class="btn btn-lg p-0 mb-4 text-muted"><i class="bi bi-arrow-left-circle"></i> All Posts</a>
+
+    <div class="card pt-2">
+
+        <div class="card-body mx-4">
+
+            @* Blog Title *@
+            <h3 class="card-title py-2">@Model.Title</h3>
+
+            <hr />
+
+            @* Blog Content *@
+            <p class="card-text" style="">
+                <div id="view" style="border:0px; overflow:hidden" class="quillView py-2">
+                </div>
+                @* Well, this was a boozefest..
+                    
+                In March 2023 after a hiatus due to Covid, the bi-annual Dramfest was once again being held at the Christchurch Conference Centre. Only one of us from the club had been before so there was an air of excitement about more members from the club attending. After we all flew down the previous day, the club meet up in the massive long, snaking line that had emerged from The Conference Centre. Feverish excitement was in the air, and everyone was looking visibly parched...
+
+                <img src="~/GalleryPics/f26952_c972c90d996d49069792390cf58adf99-mv2 (4).jpg" style="width:100%" />
+
+                We finally got inside, and everyone was able to walk around the stalls to see what the first targets in their sights were... A few people were starting to become slightly agitated because they were made to wait for the bagpipe band to make their entrance and signal the start of the event. However, this crisis was averted once the pipe band left the building and everyone as able to march to their desired destination (in other words, everyone was too thirsty and needed liquid refreshment).
+
+                It is hard to describe how the event was other than heaven. There were over 50 stalls of quality whisky available, both from New Zealand and international, and everyone remained rather pleasant. This didn't quite apply to the Springbank stand which naturally drew a massive crowd. One certain club member, - lets just say they 'politely' told the gentleman to 'please remove himself' from the stand after he was getting in people's way because of an opinion he held on the Springbank Distillery (this certain club member has no regrets either).
+
+                <i class="fs-2 font-italic">*Image*</i>
+
+                The end of the day for everyone was a bit of a blur with some members needing to be escort to their residence for the evening. When in Rome eh? 😜
+
+                The next day was a bit on the slow side initially, headaches abound, the club met up for a well-earned coffee and a breakfast that rivalled a Viking feast! This was very well needed judging from everyone's expressions that morning.
+
+                The second day's tasting started with a trudge back to Conference Centre and there were blasphemous whispers of 'how are we going to do this again?' Needless to say, when the chips are down and there is no light at the end of the tunnel - just have a dram of 55% Cask Strength Highland Park to knock some sense back into you! After this rather lovely pick me up, everyone was fighting fit and ready to try everything that that they missed on the day before. Rinse and repeat, rinse and repeat.
+
+                At the end of the second day, everyone was happy and satisfied with their achievements for the weekend with everyone walking their respective paths home into the sunset (or flight back to Wellington)
+
+
+                <i class="fs-2 font-italic">*Video*</i>
+
+                Till Dramfest 2025!
+
+                Slainte! *@
+            </p>
+
+            @*Social Links*@
+            <hr />
+            <span class="d-flex gap-4 fs-5 p-2 blogSocialLinks">
+                <a href="@($"https://www.facebook.com/sharer/sharer.php?u={@pageURL}")"><i class="bi bi-facebook"></i></a>
+                <a href="@($"https://twitter.com/intent/tweet?text={@pageURL}")"><i class="bi bi-twitter-x"></i></a>
+                <a href="@($"https://www.linkedin.com/shareArticle?mini=true&url={@pageURL}")"><i class="bi bi-linkedin"></i></a>
+                <a href="" data-bs-toggle="modal" data-bs-target="#shareLinkModal"><i class="bi bi-link-45deg"></i></a>
+                </span>
+            <hr />
+        </div>
+
+        @*Date Created*@
+
+        <div class="card-footer py-4" style="margin: -5px 0 -5px 0">
+            <p class="card-subtitle text-body-secondary px-4" style="font-size: 11pt">Date Created: May 29@* @Model.CreatedDate.ToString("dd/MM/yyyy") *@, Last changed: May 29 @*@Model.UpdatedDate.ToString("dd/MM/yyyy") *@ </p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="shareLinkModal" tabindex="-1" aria-labelledby="shareLinkModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="shareLinkModal">Share Via Link</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Click the link to copy to clipboard.
+                <div onclick="navigator.clipboard.writeText('@pageURL')" class="border p-2 shareLinkBox">@pageURL</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/quill/quill.js"></script>
+<link rel="stylesheet" href="~/lib/quill/quill.snow.css" />
+<style>
+    .blogSocialLinks a{
+        color: inherit;
+        text-decoration: inherit;
+    }
+
+        .blogSocialLinks a:hover {
+            filter: brightness(200%);
+        }
+
+    .shareLinkBox{
+        background:white;
+    }
+    .shareLinkBox:hover {
+        filter: brightness(95%);
+    }
+
+    .shareLinkBox:active {
+        filter: brightness(90%);
+    }
+    .ql-container {
+        margin: 0;
+        padding: 0;
+        font-family: var(--bs-body-font-family);
+        font-size: var(--bs-body-font-size);
+    }
+
+        .ql-container .ql-editor{
+            margin: 0;
+            padding: 0;
+        }
+
+        .ql-container img{
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+</style>
+<script>
+    // Quill
+    const quillViewOptions = {
+        // debug: 'info',
+        modules: {
+            toolbar: false,
+        },
+        placeholder: 'This should maybe not be empty!',
+        theme: 'snow'
+    };
+    quillview = new Quill('#view', quillViewOptions);
+    quillview.disable() //to disable editor
+    quillview.setContents(JSON.parse(@Html.Raw(Model.Content)));
+
+    window.onload = linkToast = new bootstrap.Toast(document.getElementById('linkToast'));
+</script>

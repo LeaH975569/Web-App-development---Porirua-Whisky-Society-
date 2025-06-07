@@ -1,0 +1,21 @@
+﻿@model ErrorViewModel
+@{
+    if (Model.StatusCode != null)
+        ViewData["Title"] = $"{Model.StatusCode}";
+    else
+        ViewData["Title"] = $"Something Went Wrong!";
+}
+
+<br />
+<div class="text-center text-danger m-2">
+    @if (Model.StatusCode != null)
+    {
+        <h1><i class="bi bi-exclamation-triangle-fill"></i> @Model.StatusCode <i class="bi bi-exclamation-triangle-fill"></i></h1>
+    }
+    <h3>@Model.ErrorMessage</h3>
+</div>
+<br />
+<img src="~/images/error/404.png" class="img-fluid rounded-4 mx-auto d-block m-4 border-secondary" style="height: 400px; border:solid 2px" />
+<p class="text-center text-muted">
+    <i>You've broken it</i>
+</p>

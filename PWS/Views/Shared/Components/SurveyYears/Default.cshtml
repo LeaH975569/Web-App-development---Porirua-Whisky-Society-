@@ -1,0 +1,16 @@
+﻿@model List<int>
+@if(Model.Count>0)
+{
+    <li class="nav-item dropdown" style="width:fit-content">
+        <a class="nav-link text-secondary dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Yearly Tasting Results
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink" style="width:270px">
+            @foreach(int year in Model)
+            {
+                <li><a class="dropdown-item" asp-controller="TastingResults" asp-action="Index" asp-route-year="@year">@year</a></li>
+            }
+
+        </ul>
+    </li>
+}

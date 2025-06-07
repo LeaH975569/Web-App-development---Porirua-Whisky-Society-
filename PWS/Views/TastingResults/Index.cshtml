@@ -1,0 +1,63 @@
+﻿@model List<Survey>
+@{
+    ViewData["Title"] = "Tasting Results";
+}
+ 
+<div class="mb-5 " style="width:100%; height:46vh; position:relative; background-color: #333333;">
+    <div class="justify-content-center text-white" style="position:absolute; width:fit-content; height:fit-content; top:0; bottom:0; left:0; right:0; margin: auto auto; z-index:2;">
+        <h1>@ViewBag.year Tasting Results</h1>
+    </div>
+    <div style="position:relative; width:100%; height:100%; background-image:url('/images/tastingResults/yearlyTastingResultIndex5.jpg'); background-repeat: repeat-x; background-size: auto 100%; opacity:0.5; z-index:1; background-position:center;"></div>
+     
+</div>
+
+<div class="container">
+    <div class="d-flex flex-column">
+        <div class="d-flex">
+
+        </div>
+        <table class="mx-auto p-2" style="width:fit-content">
+        @foreach (var survey in Model)
+        {
+            <tr class="align-top">
+                <td class="fw-bold">
+                    <i class="bi bi-calendar-check fs-2 mx-2" style="margin-top: -10px;"></i>
+                </td>
+                <td class="">
+                    <h3>@survey.Title</h3>
+                    <h4>@survey.Subtitle</h4>
+                        <h5>@survey.End.ToString("dd MMMM yyyy")</h5>
+                </td>
+                <td>
+                    <ol class="flex-grow-1 text-muted">
+                        @foreach(var ti in survey.Tastings.OrderByDescending(x => x.GetAverageScore()))
+                        {
+                            // score can also be added here easily with ti.GetAverageScore()
+                                <li>
+                                    <a asp-controller="WhiskeyDatabase" asp-action="Whiskey" asp-route-id="@ti.Whiskey.WhiskeyId" class="text-secondary-emphasis">@ti.Whiskey.WhiskeyName </a>
+                                    <br>
+                                    @ti.GetAverageScore().ToString("F0")/100
+                                </li>
+                        }
+                    </ol>
+                </td>
+            </tr>
+        }
+        </table>
+    </div>
+</div>
+
+ <style> 
+    body > .container{
+        margin-left: 0;
+        margin-right: 0;
+        max-width: 100%;
+        padding: 0;
+        align-items:center;
+    }
+    table td{
+        padding: 0 20px 50px 20px;
+    }
+</style>
+
+   

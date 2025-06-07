@@ -1,0 +1,48 @@
+﻿@model PWS.Models.Whiskey
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Whiskey</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.WhiskeyName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.WhiskeyName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.WhiskeyDescription)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.WhiskeyDescription)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.WhiskeyFinish)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.WhiskeyFinish)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.WhiskeyAroma)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.WhiskeyAroma)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.WhiskeyTaste)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.WhiskeyTaste)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.WhiskeyId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

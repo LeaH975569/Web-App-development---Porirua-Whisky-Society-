@@ -1,0 +1,94 @@
+﻿@model PWS.Models.TastingItem
+
+@{
+    ViewData["Title"] = "Create";
+}
+<br>
+<h1>Create</h1>
+<br> 
+<h4>Tasting Item</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="ItemCreate">
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" value="@ViewBag.surveyId" name="surveyId" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Display Name of the Tasting Item</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <br>
+            <div class="form-group">
+                <p>Type keyword in the box below to select a whisky</p>
+                <input id="Search" class="form-control" style="max-width: 300px;" placeholder="Search for a whisky..." />
+                @Html.ValidationMessageFor(m => m.Whiskey)
+            </div>
+
+            <div class="card border-primary mt-3" style="max-width: 20rem;">
+                <div class="card-header">Selected Whiskey</div>
+                <div class="card-body">
+                    <input type="hidden" name="whiskeyId" id="WhiskeyId" />
+                    <h4 class="card-title" id="WhiskeyName">Whiskey Name</h4>
+                    <p class="card-text" id="WhiskeyDescription">Whiskey Description</p>
+                </div>
+            </div>
+            <br>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Description on survey</label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <br>
+             
+            <div class="form-group">
+                <input type="submit" value="ItemCreate" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<br>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@ViewBag.surveyId" class="btn btn-outline-dark">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $("#Search").autocomplete({
+            minLength: 2,
+            delay: 500,
+            source: function (request, response) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Api/Search",
+                    data: "\"" + request.term + "\"",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        response(data);
+                    },
+                    error: function (result) {
+                        alert("Error");
+                    }
+                });
+            },
+            appendTo: "#whiskeyResults",
+            select: function (event, ui) {
+                $("#WhiskeyId").val(ui.item.whiskeyId);
+                $("#WhiskeyName").text(ui.item.whiskeyName);
+                $("#WhiskeyDescription").text(ui.item.whiskeyDescription.substring(0,500));
+                $("#WhiskeyImage").attr("src", ui.item.whiskeyImageUrl);
+
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li class='col-sm-4'>")
+                .append("<div class='border'>" + "<h4>" + item.whiskeyName + "</h4>" + "<br>" + item.whiskeyDescription.substring(0,300) + "</div>")
+                .appendTo(ul);
+        };
+    </script>
+}
